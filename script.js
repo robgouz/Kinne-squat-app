@@ -10,15 +10,37 @@ async function setupCamera() {
     });
 }
 
-// Chargement du modèle TensorFlow.js
+// Création du canevas pour afficher les points
+const canvas = document.createElement('canvas');
+document.body.appendChild(canvas);
+const ctx = canvas.getContext('2d');
+
 async function loadModel() {
     return poseDetection.createDetector(poseDetection.SupportedModels.MoveNet);
+}
+
+// Fonction pour dessiner les points de détection sur le corps
+function drawKeypoints(keypoints) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    keypoints.forEach(keypoint => {
+        if (keypoint.score > 0.3) { // Seulement si la détection est sûre
+            ctx.beginPath();
+            ctx.arc(keypoint.x, keypoint.y, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = "red";
+            ctx.fill();
+        }
+    });
 }
 
 async function detectSquat(detector) {
     const poses = await detector.estimatePoses(video);
     if (poses.length > 0) {
         const keypoints = poses[0].keypoints;
+        drawKeypoints(keypoints); // Affiche les points
+
         const hip = keypoints.find(k => k.name === 'left_hip');
         const knee = keypoints.find(k => k.name === 'left_knee');
 
