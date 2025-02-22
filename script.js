@@ -1,3 +1,20 @@
+function speak(text) {
+    if ('speechSynthesis' in window) {
+        let utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'fr-FR';  // Langue en français
+        utterance.volume = 1; // Volume max
+        utterance.rate = 1; // Vitesse normale
+        utterance.pitch = 1; // Hauteur normale
+        speechSynthesis.speak(utterance);
+    } else {
+        console.error("Synthèse vocale non supportée par ce navigateur.");
+    }
+}
+
+// Test immédiat au chargement de la page
+window.onload = function() {
+    speak("Bienvenue, test de la voix !");
+};
 const video = document.getElementById('video');
 const canvas = document.getElementById('output');
 const ctx = canvas.getContext('2d');
